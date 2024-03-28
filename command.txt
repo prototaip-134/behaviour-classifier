@@ -1,0 +1,12 @@
+conda create --name behaviour python=3.9 -y
+conda activate behaviour
+conda install pytorch torchvision -c pytorch  # This command will automatically install the latest version PyTorch and cudatoolkit, please check whether they match your environment.
+pip install -U openmim
+mim install mmengine
+mim install mmcv
+git clone https://github.com/open-mmlab/mmaction2.git
+cd mmaction2
+pip install -v -e .
+
+
+python build_labels.py -r ./rawframes/ -a ./animal-kingdom/AR_metadata.xlsx
