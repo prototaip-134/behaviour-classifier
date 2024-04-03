@@ -1,12 +1,24 @@
-ann_file_test = './data/test_annotations.txt'
-ann_file_train = './data/train_annotations.txt'
-ann_file_val = './data/test_annotations.txt'
-auto_scale_lr = dict(base_batch_size=12, enable=False)
-data_root = './data/'
-data_root_test = './data/'
-data_root_val = './data/'
+ann_file_test = './data/animal-kingdom/test_annotations.txt'
+ann_file_train = './data/animal-kingdom/train_annotations.txt'
+ann_file_val = './data/animal-kingdom/test_annotations.txt'
+root = './data/animal-kingdom'
 dataset_type = 'VideoDataset'
 
+vis_backends = [
+    dict(type='LocalVisBackend'),
+    dict(type='WandbVisBackend')
+]
+visualizer = dict(
+    type='ActionVisualizer', 
+    vis_backends=vis_backends
+)
+
+train_batch_size = 4
+num_workers = 16
+
+work_dir = './work_dirs/ircsn_ig65m-pretrained-r152-bnfrozen_8xb12-32x2x1-58e_kinetics400-rgb'
+
+auto_scale_lr = dict(base_batch_size=12, enable=False)
 default_hooks = dict(
     checkpoint=dict(
         interval=2, max_keep_ckpts=5, save_best='auto', type='CheckpointHook'),
@@ -81,13 +93,12 @@ param_scheduler = [
 ]
 randomness = dict(deterministic=False, diff_rank_seed=False, seed=None)
 resume = False
-root = './data/'
 test_cfg = dict(type='TestLoop')
 test_dataloader = dict(
     batch_size=1,
     dataset=dict(
-        ann_file='./data/test_annotations.txt',
-        data_prefix=dict(video='./data/'),
+        ann_file=ann_file_test,
+        data_prefix=dict(video=root),
         multi_class=True,
         num_classes=400,
         pipeline=[
@@ -109,7 +120,7 @@ test_dataloader = dict(
         ],
         test_mode=True,
         type='VideoDataset'),
-    num_workers=8,
+    num_workers=num_workers,
     persistent_workers=True,
     sampler=dict(shuffle=False, type='DefaultSampler'))
 test_evaluator = dict(metric_list='mean_average_precision', type='AccMetric')
@@ -133,10 +144,10 @@ test_pipeline = [
 train_cfg = dict(
     max_epochs=58, type='EpochBasedTrainLoop', val_begin=1, val_interval=3)
 train_dataloader = dict(
-    batch_size=12,
+    batch_size=train_batch_size,
     dataset=dict(
-        ann_file='./data/train_annotations.txt',
-        data_prefix=dict(video='./data/'),
+        ann_file=ann_file_train,
+        data_prefix=dict(video=root),
         multi_class=True,
         num_classes=400,
         pipeline=[
@@ -161,7 +172,7 @@ train_dataloader = dict(
             dict(type='PackActionInputs'),
         ],
         type='VideoDataset'),
-    num_workers=8,
+    num_workers=num_workers,
     persistent_workers=True,
     sampler=dict(shuffle=True, type='DefaultSampler'))
 train_pipeline = [
@@ -185,8 +196,8 @@ val_cfg = dict(type='ValLoop')
 val_dataloader = dict(
     batch_size=1,
     dataset=dict(
-        ann_file='./data/test_annotations.txt',
-        data_prefix=dict(video='./data/'),
+        ann_file=ann_file_val,
+        data_prefix=dict(video=root),
         multi_class=True,
         num_classes=400,
         pipeline=[
@@ -208,7 +219,7 @@ val_dataloader = dict(
         ],
         test_mode=True,
         type='VideoDataset'),
-    num_workers=8,
+    num_workers=num_workers,
     persistent_workers=True,
     sampler=dict(shuffle=False, type='DefaultSampler'))
 val_evaluator = dict(metric_list='mean_average_precision', type='AccMetric')
@@ -229,11 +240,4 @@ val_pipeline = [
     dict(input_format='NCTHW', type='FormatShape'),
     dict(type='PackActionInputs'),
 ]
-vis_backends = [
-    dict(type='LocalVisBackend'),
-]
-visualizer = dict(
-    type='ActionVisualizer', vis_backends=[
-        dict(type='LocalVisBackend'),
-    ])
-work_dir = './work_dirs/ircsn_ig65m-pretrained-r152-bnfrozen_8xb12-32x2x1-58e_kinetics400-rgb'
+

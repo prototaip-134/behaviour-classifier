@@ -1,12 +1,12 @@
-ann_file_test = './data/test_annotations.txt'
-ann_file_train = './data/train_annotations.txt'
-ann_file_val = './data/test_annotations.txt'
-auto_scale_lr = dict(base_batch_size=12, enable=False)
-data_root = './data'
-data_root_test = './data'
-data_root_val = './data'
-dataset_type = 'RawframeDataset'
+ann_file_test = './data/animal-kingdom/test_annotations.txt'
+ann_file_train = './data/animal-kingdom/train_annotations.txt'
+ann_file_val = './data/animal-kingdom/test_annotations.txt'
+root = './data/animal-kingdom/rawframes'
 
+dataset_type = 'RawframeDataset'
+work_dir = './work_dirs/ircsn_ig65m-pretrained-r152-bnfrozen_8xb12-32x2x1-58e_kinetics400-rgb'
+
+auto_scale_lr = dict(base_batch_size=12, enable=False)
 default_hooks = dict(
     checkpoint=dict(
         interval=2, max_keep_ckpts=5, save_best='auto', type='CheckpointHook'),
@@ -81,12 +81,11 @@ param_scheduler = [
 ]
 randomness = dict(deterministic=False, diff_rank_seed=False, seed=None)
 resume = False
-root = './data/'
 test_cfg = dict(type='TestLoop')
 test_dataloader = dict(
     batch_size=1,
     dataset=dict(
-        ann_file='./data/test_annotations.txt',
+        ann_file=ann_file_test,
         data_prefix=dict(img=root),
         multi_class=True,
         num_classes=400,
@@ -133,7 +132,7 @@ train_cfg = dict(
 train_dataloader = dict(
     batch_size=12,
     dataset=dict(
-        ann_file='./data/train_annotations.txt',
+        ann_file=ann_file_train,
         data_prefix=dict(img=root),
         multi_class=True,
         num_classes=400,
@@ -181,7 +180,7 @@ val_cfg = dict(type='ValLoop')
 val_dataloader = dict(
     batch_size=1,
     dataset=dict(
-        ann_file='./data/test_annotations.txt',
+        ann_file=ann_file_val,
         data_prefix=dict(img=root),
         multi_class=True,
         num_classes=400,
@@ -230,4 +229,4 @@ visualizer = dict(
     type='ActionVisualizer', vis_backends=[
         dict(type='LocalVisBackend'),
     ])
-work_dir = './work_dirs/ircsn_ig65m-pretrained-r152-bnfrozen_8xb12-32x2x1-58e_kinetics400-rgb'
+
