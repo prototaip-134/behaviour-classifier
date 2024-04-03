@@ -1,12 +1,23 @@
 ann_file_test = './data/animal-kingdom/test_annotations.txt'
 ann_file_train = './data/animal-kingdom/train_annotations.txt'
 ann_file_val = './data/animal-kingdom/test_annotations.txt'
-root = './data/animal-kingdom/rawframes'
+root = './data/animal-kingdom'
 
 dataset_type = 'RawframeDataset'
 work_dir = './work_dirs/ircsn_ig65m-pretrained-r152-bnfrozen_8xb12-32x2x1-58e_kinetics400-rgb'
 
-auto_scale_lr = dict(base_batch_size=12, enable=False)
+vis_backends = [
+    dict(type='LocalVisBackend'),
+    dict(type='WandbVisBackend')
+]
+visualizer = dict(
+    type='ActionVisualizer', 
+    vis_backends=vis_backends
+)
+
+batch_size = 8
+
+auto_scale_lr = dict(base_batch_size=batch_size, enable=False)
 default_hooks = dict(
     checkpoint=dict(
         interval=2, max_keep_ckpts=5, save_best='auto', type='CheckpointHook'),
@@ -130,7 +141,7 @@ test_pipeline = [
 train_cfg = dict(
     max_epochs=58, type='EpochBasedTrainLoop', val_begin=1, val_interval=3)
 train_dataloader = dict(
-    batch_size=12,
+    batch_size=batch_size,
     dataset=dict(
         ann_file=ann_file_train,
         data_prefix=dict(img=root),
@@ -222,11 +233,3 @@ val_pipeline = [
     dict(input_format='NCTHW', type='FormatShape'),
     dict(type='PackActionInputs'),
 ]
-vis_backends = [
-    dict(type='LocalVisBackend'),
-]
-visualizer = dict(
-    type='ActionVisualizer', vis_backends=[
-        dict(type='LocalVisBackend'),
-    ])
-
